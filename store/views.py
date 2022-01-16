@@ -6,8 +6,19 @@ import json
 def store(request):
     products = Product.objects.all()
     
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        items = order.orderitem_set.all()
+        cartItem = order.get_cart_item
+    else:
+        items = []
+        order = {"get_cart_item": 0,  "get_cart_total": 0 }
+        cartItem = order['get_cart_total']
+    
     context = {
-        'products': products    
+        'products': products,
+        'cartItem': cartItem   
     }
     
     return render(request, 'store/store.html', context)
@@ -19,16 +30,17 @@ def cart(request):
         customer = request.user.customer
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
         items = order.orderitem_set.all()
+        cartItem = order.get_cart_item
+           
     else:
         items = []   
-        order = {
-            "get_cart_item": 0,
-            "get_cart_total": 0
-        }
+        order = {"get_cart_item": 0,  "get_cart_total": 0 }
+        cartItem = order['get_cart_total']
         
     context = {
         'items': items,
-        'order': order
+        'order': order,
+        'cartItem': cartItem   
     }
     
     return render(request, 'store/cart.html', context)
@@ -40,13 +52,17 @@ def checkout(request):
         customer = request.user.customer
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
         items = order.orderitem_set.all()
+        cartItem = order.get_cart_item
+        
     else:
         items = []
         order = {"get_cart_item": 0, "get_cart_total": 0 }
+        cartItem = order['get_cart_total']
         
     context = {
         'items': items,
-        'order': order
+        'order': order,
+        'cartItem': cartItem   
     }
     
     return render(request, 'store/checkout.html', context)
@@ -72,5 +88,6 @@ def updateItem(request):
     orderItem.save()
     
     if orderItem.quantity <= 0:
-        OrderItem.delete()
+        orderItem.delete()
+        
     return JsonResponse('Item added Successfully', safe=False)
