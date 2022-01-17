@@ -6,7 +6,8 @@
 <div class="row">
     <div class="col-lg-6">
         <div class="box-element" id="form-wrapper">
-            <form action="" id="form">
+            <form id="form">
+                {% csrf_token %}
                 <div id="user-info">
                     <div class="form-field">
                         <input class="form-control" type="text" name="name" placeholder="Name" required>
@@ -20,7 +21,7 @@
                     <hr>
                     <p>Shipping Informations :</p>
                     <div class="form-field">
-                        <input class="form-control" type="text" name="adress" placeholder="Adresse :">
+                        <input class="form-control" type="text" name="address" placeholder="Adresse">
                     </div>
                     <div class="form-field">
                         <input class="form-control" type="text" name="city" placeholder="City">
@@ -39,6 +40,13 @@
                 <input id="form-button" class="btn btn-success btn-block my-3" type="submit" value="Continue">
             </form>
         </div>
+
+        <br>
+        <div class="box-element hidden" id="payment-info">
+            <small>Paypal Options</small>
+            <button id="make-payment" class="btn btn-primary"> Make paymet</button>
+        </div>
+        <br>
     </div>
 
     <div class="col-lg-6">
@@ -61,11 +69,16 @@
             <h5> - Total: <strong class="text-primary">$ {{order.get_cart_total|floatformat:2}} </strong></h5>
         </div>
 
-        <br>
-        <div class="box-element hidden" id="payment-info">
-            <small>Paypal Options</small>
-        </div>
     </div>
+
+	<script type="text/javascript">
+
+		var total = '{{order.get_cart_total}}'
+		var shipping = '{{order.shipping}}'
+
+	</script>
+    
+    <script src="{% static 'js/checkout.js' %}"></script>
 
 {% endblock content %}
     

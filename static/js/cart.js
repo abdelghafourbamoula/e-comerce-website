@@ -25,7 +25,7 @@ function updateUserOrder(ProductId, Action) {
 
     console.log("user logged in, Loading data ...")
 
-    var url = '/update_item/' 
+    let url = '/update_item/' 
     
     fetch(url, {
         method: 'POST',
