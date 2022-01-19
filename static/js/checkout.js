@@ -14,7 +14,10 @@ if (shipping == 'False' && user != 'AnonymousUser'){
         document.getElementById('payment-info').classList.remove("hidden");
 }
 
+
 var form = document.getElementById('form')
+csrftoken = form.getElementsByTagName("input")[0].value
+
 form.addEventListener('submit', function(e){
     e.preventDefault()
     console.log('Form Submitted...')

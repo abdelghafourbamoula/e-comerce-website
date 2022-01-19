@@ -14,7 +14,7 @@ class Customer(models.Model):
 class Product(models.Model):  
     
     name = models.CharField(max_length=50)
-    price = models.FloatField()
+    price = models.DecimalField(max_digits=6, decimal_places=2)
     digital = models.BooleanField(default=False, null=True, blank=False)
     image = models.ImageField(null=False, blank=True)
         
@@ -80,6 +80,7 @@ class ShippingAddress(models.Model):
     city = models.CharField(null=False, max_length=100)
     srate = models.CharField(null=False, max_length=100)
     zipcode = models.CharField(null=False, max_length=50)
+    country = models.CharField(null=False, max_length=50, blank=True)
     date_added = models.DateField(auto_now_add=True)
 
     def __str__(self):
