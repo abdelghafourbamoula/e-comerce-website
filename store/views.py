@@ -4,6 +4,7 @@ import json
 import datetime
 
 from .models import *
+from .utils import *
 
 
 def store(request):
@@ -13,11 +14,9 @@ def store(request):
 		order, created = Order.objects.get_or_create(customer=customer, complete=False)
 		items = order.orderitem_set.all()
 		cartItems = order.get_cart_items
+  
 	else:
-		#Create empty cart for now for non-logged in user
-		items = []
-		order = {'get_cart_total':0, 'get_cart_items':0, 'shipping':False}
-		cartItems = order['get_cart_items']
+		cartItems = cookieCart(request).get('cartItems')
 
 	products = Product.objects.all()
  
@@ -36,12 +35,13 @@ def cart(request):
 		order, created = Order.objects.get_or_create(customer=customer, complete=False)
 		items = order.orderitem_set.all()
 		cartItems = order.get_cart_items
+  
 	else:
-		#Create empty cart for now for non-logged in user
-		items = []
-		order = {'get_cart_total':0, 'get_cart_items':0, 'shipping':False}
-		cartItems = order['get_cart_items']
-
+		cookieData = cookieCart(request)
+		items = cookieData.get('items')
+		order = cookieData.get('order')
+		cartItems = cookieData.get('cartItems')
+  
 	context = {
         'items':items, 
         'order':order, 
@@ -58,11 +58,12 @@ def checkout(request):
 		order, created = Order.objects.get_or_create(customer=customer, complete=False)
 		items = order.orderitem_set.all()
 		cartItems = order.get_cart_items
+
 	else:
-		#Create empty cart for now for non-logged in user
-		items = []
-		order = {'get_cart_total':0, 'get_cart_items':0, 'shipping':False}
-		cartItems = order['get_cart_items']
+		cookieData = cookieCart(request)
+		items = cookieData.get('items')
+		order = cookieData.get('order')
+		cartItems = cookieData.get('cartItems')
 
 	context = {
         'items':items, 

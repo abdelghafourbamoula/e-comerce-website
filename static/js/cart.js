@@ -9,15 +9,42 @@ for(let i=0; i<updateBtns.length; i++) {
         console.log("Product: ",productId,", action: ",action);
         console.log('User: ',user)
 
-        // USER WAS DECLARED IN MAIN.HTML SCRIPT
-        // AnonymousUser defined by django whenthe user not authentified
+        // user was declared on main.html
+        // AnonymousUser defined by django when the user not authentified
         if(user === 'AnonymousUser'){
-            console.log("Not logged in ...")
+            addCookieItem(productId, action);
+            location.reload()
         }
         else{
             updateUserOrder(productId, action);
         }
     });
+}
+
+function addCookieItem(ProductId, Action) {
+    console.log('Not logged in ...')
+
+    if(Action == 'add') {
+        if(cart[ProductId] == undefined ) {
+            cart[ProductId] = {'quantity': 1}
+        }
+        else{
+            cart[ProductId]['quantity'] += 1   
+        }
+    }
+
+    if(Action == 'remove') {
+        cart[ProductId]['quantity'] -= 1   
+
+        if ( cart[ProductId]['quantity'] <= 0) {
+            console.log('Remve item')
+            delete cart[ProductId]  
+        }
+    }
+
+    console.log("cart :", cart)
+    document.cookie = "cart=" + JSON.stringify(cart) +";domain=;path=/"
+
 }
 
 // update the order with a promise using fetch API
