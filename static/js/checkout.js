@@ -72,7 +72,10 @@ function submitFormData(){
             'Content-Type':'applicaiton/json',
             'X-CSRFToken':csrftoken,
         }, 
-        body:JSON.stringify({'form':userFormData, 'shipping':shippingInfo}),
+        body:JSON.stringify({
+            'form':userFormData, 
+            'shipping':shippingInfo
+        }),
         
     })
 
@@ -81,6 +84,10 @@ function submitFormData(){
     .then((data) => {
         console.log('Success:', data);
         alert('Transaction completed');  
+
+        cart = {}
+        document.cookie = "cart=" + JSON.stringify(cart) +";domain=;path=/"
+
         window.location.href = '/'
     })
 }

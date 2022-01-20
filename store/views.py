@@ -9,16 +9,8 @@ from .utils import *
 
 def store(request):
 
-	if request.user.is_authenticated:
-		customer = request.user.customer
-		order, created = Order.objects.get_or_create(customer=customer, complete=False)
-		items = order.orderitem_set.all()
-		cartItems = order.get_cart_items
-  
-	else:
-		cartItems = cookieCart(request).get('cartItems')
-
 	products = Product.objects.all()
+	cartItems = cartData(request).get('cartItems')
  
 	context = {
         'products':products, 
@@ -30,17 +22,10 @@ def store(request):
    
 def cart(request):
 
-	if request.user.is_authenticated:
-		customer = request.user.customer
-		order, created = Order.objects.get_or_create(customer=customer, complete=False)
-		items = order.orderitem_set.all()
-		cartItems = order.get_cart_items
-  
-	else:
-		cookieData = cookieCart(request)
-		items = cookieData.get('items')
-		order = cookieData.get('order')
-		cartItems = cookieData.get('cartItems')
+	user_data = cartData(request)
+	items = user_data.get('items')
+	order = user_data.get('order')
+	cartItems = user_data.get('cartItems')
   
 	context = {
         'items':items, 
@@ -52,18 +37,11 @@ def cart(request):
 
 
 def checkout(request):
-    
-	if request.user.is_authenticated:
-		customer = request.user.customer
-		order, created = Order.objects.get_or_create(customer=customer, complete=False)
-		items = order.orderitem_set.all()
-		cartItems = order.get_cart_items
 
-	else:
-		cookieData = cookieCart(request)
-		items = cookieData.get('items')
-		order = cookieData.get('order')
-		cartItems = cookieData.get('cartItems')
+	user_data = cartData(request)
+	items = user_data.get('items')
+	order = user_data.get('order')
+	cartItems = user_data.get('cartItems')
 
 	context = {
         'items':items, 
@@ -109,25 +87,26 @@ def processOrder(request):
     if request.user.is_authenticated :
         customer = request.user.customer
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
-        total = float(data['form']['total'])
-        order.transaction_id = transaction_id
-
-        if total == float(order.get_cart_total) :
-            order.complete = True
-        order.save()
-
-        if order.shipping == True :
-            ShippingAddress.objects.create(
-                customer=customer,
-                order=order,
-                address=data['shipping']['address'],
-                city=data['shipping']['city'],
-                srate=data['shipping']['state'],
-                zipcode=data['shipping']['zipcode'],
-                country=data['shipping']['country']
-            )
-
+        
     else:
-        print('User is not logged in')
+        customer, order = guestOrder(request, data)
+        
+    total = float(data['form']['total'])
+    order.transaction_id = transaction_id
 
+    if total == float(order.get_cart_total) :
+        order.complete = True
+    order.save()
+    
+    if order.shipping == True :
+        ShippingAddress.objects.create(
+            customer=customer,
+            order=order,
+            address=data['shipping']['address'],
+            city=data['shipping']['city'],
+            srate=data['shipping']['state'],
+            zipcode=data['shipping']['zipcode'],
+            country=data['shipping']['country']
+        )
+        
     return JsonResponse('Payment submitted..', safe=False)

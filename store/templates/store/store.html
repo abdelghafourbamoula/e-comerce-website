@@ -6,10 +6,10 @@
 <div class="row">
 
 {% for product in products %}
-    <div class="col-lg-4 my-2">
+    <div class="col-lg-4     my-2">
         <img src="{{product.imageURL}}" class="thumbnail">
         <div class="box-element product">
-            <h6><strong> {{product.name}} </strong></h6> <hr>
+            <h6><strong> {{product.name|capfirst}} </strong></h6> <hr>
             <button data-product={{product.id}} data-action="add" class="btn btn-outline-success update-cart">Add to Cart</button>
             <a href="" class="btn btn-outline-info">View</a>
             <h3 class='price'> {{product.price|floatformat:2}} $</h3>

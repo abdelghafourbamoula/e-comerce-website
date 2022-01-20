@@ -12,7 +12,7 @@ def cookieCart(request) :
         
     print("---> cart:", cart)
 
-    #Create empty cart for now for non-logged in user
+    #Create empty cart for now for users not logged in
     items = []
     order = {'get_cart_total':0, 'get_cart_items':0, 'shipping':False}
     cartItems = order['get_cart_items']
@@ -40,14 +40,69 @@ def cookieCart(request) :
             }
             items.append(item)
 
-            if product.digital == False:
-                order['shipping'] == True
+            if product.digital == False :
+                order['shipping'] = True
+                
         except:
-            print('>>> Exception ! ')
+            print('>>>Exception: a product ws deleted but still in cookies ! ')
             pass
         
     return {
         'items':items, 
         'order':order, 
         'cartItems':cartItems
-    }
+    }  
+   
+    
+def cartData(request) :
+    ''' verify if the user logged in or not and load his cart data '''
+
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        items = order.orderitem_set.all()
+        cartItems = order.get_cart_items
+        
+    else:
+        cookieData = cookieCart(request)
+        items = cookieData.get('items')
+        order = cookieData.get('order')
+        cartItems = cookieData.get('cartItems')
+
+    return {
+        'items':items, 
+        'order':order, 
+        'cartItems':cartItems
+    }   
+
+
+def guestOrder(request, data):
+    '''get iformations for guest customer to process an order'''
+        
+    print('User is not logged in')
+    print('> COOKIIES :', request.COOKIES)
+    
+    email = data['form']['email']
+    name = data['form']['name']
+            
+    customer, created = Customer.objects.get_or_create(email=email)
+    customer.name = name
+    customer.save()
+    
+    order = Order.objects.create(
+        customer=customer,
+        complete=False
+    )
+    
+    items = cookieCart(request).get('items')
+    
+    for item in items:
+        product = Product.objects.get(id=item['product']['id'])
+        
+        orderItem = OrderItem.objects.create(
+            product=product,
+            order=order,
+            quantity=item['quantity']
+        )
+        
+    return customer, order
