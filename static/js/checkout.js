@@ -25,10 +25,11 @@ form.addEventListener('submit', function(e){
     document.getElementById('payment-info').classList.remove("hidden");
 })
 
+/*
 document.getElementById('make-payment').addEventListener('click', function(e){
     submitFormData()
 })
-
+*/
 
 function submitFormData(){
 

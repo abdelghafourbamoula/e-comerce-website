@@ -109,4 +109,4 @@ def processOrder(request):
             country=data['shipping']['country']
         )
         
-    return JsonResponse('Payment submitted..', safe=False)
+    return JsonResponse('Payment submitted...', safe=False)
