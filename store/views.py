@@ -19,6 +19,19 @@ def store(request):
  
 	return render(request, 'store/store.html', context)
 
+
+def store_digital(request):
+
+	products = Product.objects.all()
+	cartItems = cartData(request).get('cartItems')
+ 
+	context = {
+        'products':products, 
+        'cartItems':cartItems
+    }
+ 
+	return render(request, 'store/store-digital.html', context)
+
    
 def cart(request):
 
@@ -110,3 +123,13 @@ def processOrder(request):
         )
         
     return JsonResponse('Payment submitted...', safe=False)
+
+
+def login(request):
+    
+    return render(request, 'login.html', {})
+
+
+def register(request):
+    
+    return render(request, 'register.html', {})
